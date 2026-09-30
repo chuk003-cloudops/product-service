@@ -24,7 +24,7 @@ async fn main() {
         .map(|| {
             // Map the request to a response that returns a JSON array of product objects.
             warp::reply::json(&vec![
-                // Use serde_json::json! macro to create JSON objects representing the products.
+                // Use `serde_json::json!` macro to create JSON objects representing the products.
                 serde_json::json!({ "id": 1, "name": "Dog Food", "price": 19.99 }), // Product 1: Dog Food
                 serde_json::json!({ "id": 2, "name": "Cat Food", "price": 34.99 }), // Product 2: Cat Food
                 serde_json::json!({ "id": 3, "name": "Bird Seeds", "price": 10.99 }), // Product 3: Bird Seeds
