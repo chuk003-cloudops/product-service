@@ -1,49 +1,17 @@
 # Product Service
 
-The Product Service is a simple web service built using Rust and the Warp web framework. It is responsible for serving the product catalog, which includes a list of products that can be fetched via a RESTful API.
+The Product Service is a Rust/Warp API that returns the product catalog from /products. For Lab 2 it runs on its own Azure VM and reads its listening port from environment configuration.
 
-## Requirements
+## Configuration
 
-- Rust (latest stable version) and Cargo, installed below
-- Start inside the repository's `product-service` directory. The main guide already takes you there.
+The service reads PORT from the process environment or an optional local .env file. The default is 3030; .env.example documents this non-secret setting. Keep .env out of Git.
 
-## Setup Instructions
+PORT=3030
 
-1. Update the package list and install the build tools:
+## Install and run
 
-   ```bash
-   sudo apt update
-   sudo apt install build-essential
-   ```
+On the product-service VM, install Rust, Cargo, and build-essential. From this repository root, run cargo build --locked and cargo run --locked. The service listens on all IPv4 interfaces at port 3030 by default. Its NSG should allow TCP 3030 only from the laptop public IP.
 
-2. Install Rust and accept the default installation:
+## Verify
 
-   ```bash
-   curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
-   ```
-
-3. Load the Rust tools into this terminal:
-
-   ```bash
-   source "$HOME/.cargo/env"
-   ```
-
-4. Build and start the service:
-
-   ```bash
-   cargo run
-   ```
-
-   Keep this terminal open. Cargo prints build output; the application itself does not print a listening message. Do not start a second copy from the main guide.
-
-The service binds to `0.0.0.0:3030` (all IPv4 interfaces). On the VM, test `http://localhost:3030/products`. From your laptop, use `http://<VM-PUBLIC-IP>:3030/products` with port 3030 allowed by the NSG. VS Code port forwarding is an optional alternative for accessing a forwarded port through your laptop's localhost.
-
-## Testing
-
-From another terminal:
-
-```bash
-curl http://localhost:3030/products
-```
-
-Expect three products with IDs, names, and prices. You can also install the VS Code **REST Client** extension and run `test-product-service.http`.
+From another terminal on the VM, run curl -i http://localhost:3030/products. Expect HTTP 200 and three products with IDs, names, and prices. From the laptop browser, use http://PRODUCT_SERVICE_VM_PUBLIC_IP:3030/products with the actual public IP substituted.
