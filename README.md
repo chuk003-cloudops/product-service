@@ -1,17 +1,33 @@
-# Product Service
+# Product Service (CST8915 Lab 3)
 
-The Product Service is a Rust/Warp API that returns the product catalog from /products. For Lab 2 it runs on its own Azure VM and reads its listening port from environment configuration.
+This Python and Flask port preserves the Algonquin Pet Store product API used in Lab 2. The original Rust implementation remains in `src/main.rs`; the root-level `app.py` is the Lab 3 version deployed to Azure App Service.
 
-## Configuration
+## API
 
-The service reads PORT from the process environment or an optional local .env file. The default is 3030; .env.example documents this non-secret setting. Keep .env out of Git.
+- `GET /` returns a health response for the service.
+- `GET /products` returns the same three products, IDs, names, and prices as the Lab 2 Rust service.
 
-PORT=3030
+## Run and test locally
 
-## Install and run
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m unittest -v
+python app.py
+```
 
-On the product-service VM, install Rust, Cargo, and build-essential. From this repository root, run cargo build --locked and cargo run --locked. The service listens on all IPv4 interfaces at port 3030 by default. Its NSG should allow TCP 3030 only from the laptop public IP.
+The service listens on `0.0.0.0:$PORT`; `PORT` defaults to `3030` for local development. Azure App Service supplies `PORT` and detects the root Flask app in `app.py`. `requirements.txt` declares Flask and Gunicorn.
 
-## Verify
+## First four 12-Factor practices
 
-From another terminal on the VM, run curl -i http://localhost:3030/products. Expect HTTP 200 and three products with IDs, names, and prices. From the laptop browser, use http://PRODUCT_SERVICE_VM_PUBLIC_IP:3030/products with the actual public IP substituted.
+1. **Codebase:** source is versioned in this separate service repository.
+2. **Dependencies:** runtime packages are pinned in `requirements.txt`.
+3. **Config:** the port is read from `PORT`; deployment-specific configuration is not hard-coded.
+4. **Backing services:** this read-only, fixed demo catalog needs no external database. The companion order service uses RabbitMQ as an attached service configured with `RABBITMQ_CONNECTION_STRING`.
+
+The browser-based Store Front reads `VUE_APP_PRODUCT_SERVICE_URL` when it is built. CORS permits that separate frontend to call this API. No credentials belong in this repository.
+
+## AI-use disclosure
+
+Codex assisted with the Lab 3 Python port, test cases, and documentation. The student should review and understand the implementation before submission.
